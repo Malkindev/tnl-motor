@@ -8,28 +8,111 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import { Sequelize, DataTypes } from 'sequelize';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4173;
 const JWT_SECRET = process.env.JWT_SECRET || 'tnl-secret';
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'malkinlawrence00@gmail.com';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'TnlAdmin2026!';
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@example.com';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL || 'http://localhost:4173/login';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:4174';
 
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
+// Storage decision: S3 in production (if S3_BUCKET set), otherwise local uploads for dev
+const useS3 = Boolean(process.env.S3_BUCKET);
 const uploadsDir = path.join(process.cwd(), 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
+if (!useS3) {
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
+  app.use('/uploads', express.static(uploadsDir));
 }
-app.use('/uploads', express.static(uploadsDir));
 
-const storage = multer.diskStorage({
+// Database setup: use DATABASE_URL (Postgres) or fallback to SQLite file for local development
+let sequelize;
+if (process.env.DATABASE_URL) {
+  sequelize = new Sequelize(process.env.DATABASE_URL, { logging: false });
+} else {
+  const dbPath = path.join(process.cwd(), 'data', 'database.sqlite');
+  const dbDir = path.dirname(dbPath);
+  if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
+  sequelize = new Sequelize({ dialect: 'sqlite', storage: dbPath, logging: false });
+}
+
+// Models
+const User = sequelize.define('User', {
+  id: { type: DataTypes.STRING, primaryKey: true },
+  name: DataTypes.STRING,
+  email: { type: DataTypes.STRING, unique: true },
+  phone: DataTypes.STRING,
+  password: DataTypes.STRING,
+  isAdmin: { type: DataTypes.BOOLEAN, defaultValue: false }
+}, { timestamps: true });
+
+const Vehicle = sequelize.define('Vehicle', {
+  id: { type: DataTypes.STRING, primaryKey: true },
+  make: DataTypes.STRING,
+  model: DataTypes.STRING,
+  year: DataTypes.INTEGER,
+  price: DataTypes.FLOAT,
+  askPrice: DataTypes.BOOLEAN,
+  mileage: DataTypes.STRING,
+  transmission: DataTypes.STRING,
+  condition: DataTypes.STRING,
+  fuelType: DataTypes.STRING,
+  bodyType: DataTypes.STRING,
+  engine: DataTypes.STRING,
+  seats: DataTypes.INTEGER,
+  doors: DataTypes.INTEGER,
+  interior: DataTypes.STRING,
+  exterior: DataTypes.STRING,
+  location: DataTypes.STRING,
+  description: DataTypes.TEXT,
+  features: { type: DataTypes.TEXT }, // JSON string
+  featured: DataTypes.BOOLEAN,
+  sold: DataTypes.BOOLEAN,
+  images: { type: DataTypes.TEXT } // JSON string array
+}, { timestamps: true });
+
+const Inquiry = sequelize.define('Inquiry', {
+  id: { type: DataTypes.STRING, primaryKey: true },
+  vehicleId: DataTypes.STRING,
+  vehicleTitle: DataTypes.STRING,
+  name: DataTypes.STRING,
+  email: DataTypes.STRING,
+  phone: DataTypes.STRING,
+  message: DataTypes.TEXT,
+  status: DataTypes.STRING
+}, { timestamps: true });
+
+const ResetToken = sequelize.define('ResetToken', {
+  token: { type: DataTypes.STRING, primaryKey: true },
+  email: DataTypes.STRING,
+  expiresAt: DataTypes.DATE
+}, { timestamps: true });
+
+// S3 client setup (optional)
+let s3Client = null;
+if (useS3) {
+  s3Client = new S3Client({
+    region: process.env.S3_REGION,
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY_ID,
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY
+    },
+    endpoint: process.env.S3_ENDPOINT || undefined
+  });
+}
+
+// Multer: memory storage when using S3, disk storage otherwise
+const multerStorage = useS3 ? multer.memoryStorage() : multer.diskStorage({
   destination: (req, file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
@@ -38,7 +121,7 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage,
+  storage: multerStorage,
   fileFilter: (req, file, cb) => {
     const accepted = ['.jpg', '.jpeg', '.png', '.webp'];
     cb(null, accepted.includes(path.extname(file.originalname).toLowerCase()));
@@ -46,33 +129,30 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-const store = {
-  users: [],
-  vehicles: [],
-  inquiries: [],
-  resetTokens: []
-};
-
 const createToken = (user) => jwt.sign({ id: user.id, email: user.email, isAdmin: user.isAdmin }, JWT_SECRET, { expiresIn: '7d' });
 
-const seedAdmin = async () => {
-  const password = process.env.ADMIN_PASSWORD || 'TnlAdmin2026!';
-  const existingAdmin = store.users.find((user) => user.email === ADMIN_EMAIL);
-  if (!existingAdmin) {
+async function seedAdminIfNeeded() {
+  await sequelize.sync();
+  const adminEmail = process.env.ADMIN_EMAIL || ADMIN_EMAIL;
+  const existing = await User.findOne({ where: { email: adminEmail } });
+  if (!existing) {
+    const password = process.env.ADMIN_PASSWORD || 'TnlAdmin2026!';
     const hashed = await bcrypt.hash(password, 10);
-    store.users.push({ id: uuidv4(), name: 'TNL Motors Admin', email: ADMIN_EMAIL, phone: '', password: hashed, isAdmin: true });
-    console.log(`Seeded admin user: ${ADMIN_EMAIL}`);
+    await User.create({ id: uuidv4(), name: 'TNL Motors Admin', email: adminEmail, phone: '', password: hashed, isAdmin: true });
+    console.log(`Seeded admin user: ${adminEmail}`);
   }
-};
+}
 
-seedAdmin();
+seedAdminIfNeeded();
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1] || req.cookies.token;
   if (!token) return res.status(401).json({ message: 'Unauthorized' });
   try {
     const payload = jwt.verify(token, JWT_SECRET);
-    req.user = payload;
+    const user = await User.findByPk(payload.id);
+    if (!user) return res.status(401).json({ message: 'Invalid token' });
+    req.user = user;
     next();
   } catch (error) {
     res.status(401).json({ message: 'Invalid token' });
