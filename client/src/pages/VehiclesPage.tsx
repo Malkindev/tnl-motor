@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import AdminLayout from '../layouts/AdminLayout';
 import { useVehicleStore } from '../stores/vehicleStore';
 
 const filters = [
@@ -21,7 +20,7 @@ function VehicleCard({ vehicle }: { vehicle: any }) {
 
   return (
     <div className="card">
-      <img src={src} alt={`${vehicle.make} ${vehicle.model}`} onError={(e) => { setSrc(placeholder); }} />
+      <img loading="lazy" decoding="async" src={src} alt={`${vehicle.make} ${vehicle.model}`} onError={(e) => { setSrc(placeholder); }} />
       <div className="card-body">
         <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
           <p className="badge">{vehicle.sold ? 'Sold' : 'Available'}</p>
@@ -77,9 +76,8 @@ export default function VehiclesPage() {
   }, [vehicles, search, filtersState, sortKey]);
 
   return (
-    <div>
-      <Header />
-      <main className="container section">
+    <AdminLayout>
+      <main>
         <div className="section-header">
           <div>
             <h2>Browse Vehicles</h2>
@@ -111,11 +109,10 @@ export default function VehiclesPage() {
           ))}
         </div>
 
-        <div className="cards-grid" style={{ marginTop: '2rem' }}>
+        <div className="cards-grid mt-8">
           {filteredVehicles.length ? filteredVehicles.map((vehicle) => <VehicleCard key={vehicle.id} vehicle={vehicle} />) : <p>No vehicles matched your search.</p>}
         </div>
       </main>
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }

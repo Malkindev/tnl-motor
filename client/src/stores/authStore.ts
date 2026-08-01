@@ -28,9 +28,18 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user, token });
   },
   signOut: () => {
+    try {
+      // Attempt server-side signout if endpoint exists (no-op if absent)
+      axios.post('/api/auth/signout').catch(() => {});
+    } catch (e) {
+      // ignore
+    }
     localStorage.removeItem('tnl_token');
     localStorage.removeItem('tnl_user');
+    try { sessionStorage.removeItem('tnl_token'); sessionStorage.removeItem('tnl_user'); } catch (e) {}
     delete axios.defaults.headers.common.Authorization;
     set({ user: null, token: null });
+    // navigate to login to ensure UI resets
+    try { window.location.href = '/login'; } catch (e) {}
   }
 }));

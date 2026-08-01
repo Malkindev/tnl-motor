@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import axios from 'axios';
 import App from './App';
+import './index.css';
 import './styles.css';
 
 // Configure axios base URL from environment variable for production

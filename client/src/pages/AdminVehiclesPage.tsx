@@ -19,6 +19,8 @@ export default function AdminVehiclesPage() {
   const [selectedVehicle, setSelectedVehicle] = useState<any | null>(null);
   const [images, setImages] = useState<ImageItem[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [status, setStatus] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [featuresInput, setFeaturesInput] = useState('');
   const { register, handleSubmit, reset, watch } = useForm<any>({
     defaultValues: {
@@ -145,7 +147,6 @@ export default function AdminVehiclesPage() {
     try {
       setUploadProgress(10);
       const config = {
-        headers: { 'Content-Type': 'multipart/form-data' },
         onUploadProgress: (event: AxiosProgressEvent) => {
           if (event.total) {
             setUploadProgress((event.loaded / event.total) * 100);
@@ -185,9 +186,10 @@ export default function AdminVehiclesPage() {
       setFeaturesInput('');
       setImages([]);
       setUploadProgress(0);
-    } catch (error) {
+} catch (error: any) {
       setUploadProgress(0);
-      console.error(error);
+      setError(error.response?.data?.message || 'Unable to save the vehicle.');
+      console.error('Admin vehicle save error', error);
     }
   };
 

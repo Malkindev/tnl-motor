@@ -23,6 +23,10 @@ export default function LoginPage() {
   useEffect(() => {
     const googleToken = searchParams.get('google_token');
     const googleUser = searchParams.get('google_user');
+    const callbackError = searchParams.get('error');
+    if (callbackError) {
+      setAuthError('Google sign-in could not complete.');
+    }
     if (googleToken && googleUser) {
       try {
         const parsed = JSON.parse(decodeURIComponent(googleUser));
@@ -60,9 +64,10 @@ export default function LoginPage() {
       <Header />
       <main className="container section">
         <div className="form-card" style={{ maxWidth: 520, margin: '0 auto' }}>
-          <p className="badge">Member login</p>
-          <h2>Access your account</h2>
-          <p className="small-text">Sign in to manage your profile, inquiries, and saved vehicles.</p>
+          <p className="badge">Member Login</p>
+          <h1 style={{ marginTop: 8, marginBottom: 6 }}>TNL MOTORS</h1>
+          <h2 style={{ marginTop: 0 }}>Member Login</h2>
+          <p className="small-text">Sign in to manage your profile, inquiries, saved vehicles and account.</p>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input-group">
               <label>Email Address</label>
@@ -97,14 +102,14 @@ export default function LoginPage() {
               <Link to="/forgot-password" className="nav-link">Forgot Password?</Link>
             </div>
             {authError && <p className="field-error">{authError}</p>}
-            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.9rem 1rem', fontSize: '1rem' }} disabled={loading}>
               {loading ? 'Signing in…' : 'Sign In'}
             </button>
           </form>
-          <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
-            <p style={{ marginBottom: '1rem' }}>Or continue with</p>
+          <div className="mt-6 text-center">
+            <p className="mb-4 text-sm">──────── Or continue with ────────</p>
             <button className="btn btn-secondary" style={{ width: '100%' }} onClick={continueWithGoogle}>Continue with Google</button>
-            <p style={{ marginTop: '1rem' }}>Don't have an account? <Link to="/signup">Create Account</Link></p>
+            <p className="mt-4 text-sm">Don't have an account? <Link to="/signup" className="text-blue-600">Create Account</Link></p>
           </div>
         </div>
       </main>

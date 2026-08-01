@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import AdminLayout from '../layouts/AdminLayout';
 import { useVehicleStore } from '../stores/vehicleStore';
 
 const searchFields = ['make', 'model', 'location', 'bodyType', 'fuelType'];
@@ -14,7 +13,7 @@ function VehicleCard({ vehicle }: { vehicle: any }) {
   return (
     <article className="card vehicle-card">
       <div className="vehicle-image">
-        <img src={src} alt={`${vehicle.make} ${vehicle.model}`} onError={(e) => { setSrc(placeholder); }} />
+        <img loading="lazy" decoding="async" src={src} alt={`${vehicle.make} ${vehicle.model}`} onError={(e) => { setSrc(placeholder); }} />
       </div>
       <div className="card-body">
         <div className="card-headline">
@@ -86,8 +85,7 @@ export default function HomePage() {
   }, [vehicles, search, filters, sort]);
 
   return (
-    <div>
-      <Header />
+    <AdminLayout>
       <main>
         <section className="hero hero-home">
           <div className="container hero-grid">
@@ -242,7 +240,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }

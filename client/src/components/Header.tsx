@@ -7,7 +7,8 @@ const links = [
   { label: 'Home', href: '/' },
   { label: 'Inventory', href: '/vehicles' },
   { label: 'About', href: '/#about' },
-  { label: 'Contact', href: '/#contact' }
+  { label: 'Contact', href: '/#contact' },
+  { label: 'Account', href: '/account' }
 ];
 
 export default function Header() {
@@ -48,7 +49,7 @@ export default function Header() {
             ))}
             {user?.isAdmin && (
               <Link to="/admin/dashboard" className="nav-link">
-                Admin
+                Admin Dashboard
               </Link>
             )}
           </div>

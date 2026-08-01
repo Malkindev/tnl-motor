@@ -43,10 +43,11 @@ export default function AdminEntryPage() {
     <div>
       <Header />
       <main className="container section">
-        <div className="form-card" style={{ maxWidth: 520, margin: '0 auto' }}>
+        <div className="admin-login-card">
           <p className="badge">Administrator Login</p>
-          <h2>Secure Admin Access</h2>
-          <p className="small-text">Enter your admin credentials to manage TNL Motors inventory.</p>
+          <h1 style={{ marginTop: 8, marginBottom: 6 }}>TNL MOTORS</h1>
+          <h2 style={{ marginTop: 0 }}>Administration Portal</h2>
+          <p className="small-text">Secure administrator access for TNL Motors management.</p>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input-group">
               <label>Email Address</label>
@@ -80,9 +81,9 @@ export default function AdminEntryPage() {
               {errors.password && <p className="field-error">{errors.password.message}</p>}
             </div>
             {authError && <p className="field-error">{authError}</p>}
-            <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%' }}>
-              {loading ? 'Signing in…' : 'Sign in as Admin'}
-            </button>
+              <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%', padding: '0.9rem 1rem', fontSize: '1rem' }}>
+                {loading ? 'Signing in…' : 'Sign in as Admin'}
+              </button>
           </form>
           <p style={{ marginTop: '1rem', color: '#555' }}>
             This page is for TNL Motors administrators only.

@@ -31,8 +31,8 @@ img{display:block;max-width:100%}
 .brand-text strong{display:block;font-size:1rem;letter-spacing:0.06em;text-transform:uppercase}
 .brand-text small{color:var(--muted);font-size:0.85rem}
 .nav-wrapper{display:flex;align-items:center;gap:1rem;justify-content:flex-end;flex:1;min-width:0}
-.nav-links{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
-.nav-link{display:inline-flex;align-items:center;gap:0.35rem;color:var(--text);font-weight:600;padding:0.55rem 0.6rem;border-radius:10px;transition:background .18s ease,color .18s ease}
+.nav-links{display:flex;align-items:center;gap:1.25rem;white-space:nowrap}
+.nav-link{display:inline-flex;align-items:center;gap:0.35rem;color:var(--text);font-weight:700;padding:0.55rem 0.9rem;border-radius:10px;transition:background .18s ease,color .18s ease}
 .nav-link:hover{background:var(--surface);color:var(--brand-2)}
 .profile-menu{position:relative}
 .profile-trigger{display:inline-flex;align-items:center;gap:0.35rem;padding:0.55rem 0.85rem;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--text);cursor:pointer}
@@ -42,7 +42,13 @@ img{display:block;max-width:100%}
 .dropdown-item.danger{color:#B91C1C}
 .mobile-menu-button{display:none}
 .mobile-drawer{display:none}
-@media(max-width:880px){.nav-links,.profile-menu{display:none}.mobile-menu-button{display:inline-flex}.mobile-drawer{display:block;position:absolute;top:100%;left:0;right:0;background:#fff;border-top:1px solid var(--border);box-shadow:0 18px 38px rgba(15,23,42,0.06);padding:1rem;z-index:49}} 
+@media(max-width:880px){
+  .nav-links,.profile-menu{display:none}
+  .mobile-menu-button{display:inline-flex}
+  .mobile-drawer{display:block;position:absolute;top:100%;left:0;right:0;background:#fff;border-top:1px solid var(--border);box-shadow:0 18px 38px rgba(15,23,42,0.06);padding:1rem;z-index:49}
+  .mobile-drawer .mobile-link{display:block;padding:0.85rem 0.75rem;border-radius:8px;color:var(--text);font-weight:700}
+  .mobile-drawer .mobile-link + .mobile-link{margin-top:0.4rem}
+}
 
 /* Buttons */
 .btn{border:1px solid transparent;border-radius:12px;padding:0.65rem 1rem;font-weight:600;display:inline-flex;align-items:center;gap:0.6rem}
@@ -130,3 +136,25 @@ img{display:block;max-width:100%}
 .gallery-main{border-radius:12px;overflow:hidden}
 .gallery-thumbs{display:flex;gap:0.5rem;margin-top:0.5rem}
 .gallery-thumb{width:64px;height:48px;object-fit:cover;border-radius:8px;cursor:pointer;border:1px solid var(--border)}
+
+/* Admin login card */
+.admin-login-card{max-width:520px;margin:0 auto;background:#fff;border:1px solid var(--border);border-radius:16px;padding:36px;box-shadow:0 20px 60px rgba(15,23,42,0.06);display:flex;flex-direction:column;gap:18px}
+.admin-login-card h1{font-size:1.25rem;letter-spacing:0.12em;margin:0}
+.admin-login-card h2{font-size:1.1rem;margin:0;color:var(--brand)}
+.admin-login-card .input-group label{display:block;margin-bottom:8px;font-weight:700}
+.admin-login-card input{width:100%;min-height:48px;padding:0.6rem 0.75rem;border:1px solid var(--border);border-radius:10px}
+.admin-login-card .btn{border-radius:12px;padding:0.85rem 1rem}
+.admin-login-card .field-error{margin-top:6px}
+
+@media(max-width:520px){.admin-login-card{padding:24px;margin:1rem}}
+
+/* General form card used across auth pages */
+.form-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:32px;box-shadow:0 20px 60px rgba(15,23,42,0.06);display:flex;flex-direction:column;gap:18px}
+.form-card h1{font-size:1.25rem;letter-spacing:0.12em;margin:0}
+.form-card h2{font-size:1.05rem;margin:0;color:var(--brand)}
+.form-card .input-group label{display:block;margin-bottom:8px;font-weight:700}
+.form-card input,.form-card select{width:100%;min-height:52px;padding:0.7rem 0.85rem;border:1px solid var(--border);border-radius:10px;font-size:1rem}
+.form-card .btn{border-radius:12px;padding:0.85rem 1rem}
+.form-card .field-error{margin-top:6px}
+
+@media(max-width:520px){.form-card{padding:20px;margin:1rem}}

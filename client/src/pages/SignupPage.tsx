@@ -66,10 +66,10 @@ export default function SignupPage() {
     <div>
       <Header />
       <main className="container section">
-        <div className="form-card" style={{ maxWidth: 600, margin: '0 auto' }}>
-          <p className="badge">Create your account</p>
-          <h2>Start buying with confidence</h2>
-          <p className="small-text">Sign up to browse vehicles, save favorites, and send inquiries.</p>
+        <div className="form-card" style={{ maxWidth: 500, margin: '0 auto', padding: 40, gap: 20 }}>
+          <p className="badge">Create Your Account</p>
+          <h1 style={{ marginTop: 8, marginBottom: 6 }}>Join TNL Motors</h1>
+          <p className="small-text">Create an account to browse premium vehicles, save favorites and send inquiries.</p>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="input-group">
               <label>Full Name</label>
@@ -137,8 +137,8 @@ export default function SignupPage() {
               {confirmPassword && password !== confirmPassword && <p className="field-error">Passwords do not match.</p>}
             </div>
             {error && <p className="field-error">{error}</p>}
-            <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={loading}>
-              {loading ? 'Creating account…' : 'Sign Up'}
+            <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '0.9rem 1rem', fontSize: '1rem' }} disabled={loading}>
+              {loading ? 'Creating account…' : 'Create Account'}
             </button>
           </form>
           <p style={{ marginTop: '1rem', textAlign: 'center' }}>Already have an account? <Link to="/login">Sign In</Link></p>

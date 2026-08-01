@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Project-specific token overrides */
+:root {
+  --tnl-blue: #0f1724;
+  --tnl-gold: #C8A75B;
+}
+
+/* Small helpers to ease migration from legacy styles */
+.container { @apply mx-auto px-4 max-w-6xl; }
+.btn { @apply inline-flex items-center justify-center rounded-full font-semibold px-4 py-2; }
+.btn-primary { @apply bg-amber-400 text-gray-900; }
+.card { @apply bg-white rounded-2xl shadow-md overflow-hidden border border-gray-100; }

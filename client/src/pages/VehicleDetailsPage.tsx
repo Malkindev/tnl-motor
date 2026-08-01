@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import AdminLayout from '../layouts/AdminLayout';
 
 export default function VehicleDetailsPage() {
   const { id } = useParams();
@@ -29,29 +28,24 @@ export default function VehicleDetailsPage() {
 
   if (!vehicle) {
     return (
-      <div>
-        <Header />
-        <main className="container section">
-          <p>Loading vehicle details…</p>
-        </main>
-        <Footer />
-      </div>
+      <AdminLayout>
+        <p>Loading vehicle details…</p>
+      </AdminLayout>
     );
   }
 
   return (
-    <div>
-      <Header />
-      <main className="container section">
+    <AdminLayout>
+      <main>
         <div style={{ display: 'grid', gap: '2rem' }}>
           <div style={{ display: 'grid', gap: '1rem' }}>
             <div className="hero-image" style={{ minHeight: 420 }}>
-              <img src={vehicle.images?.[0] || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'><rect width='100%' height='100%' fill='%23F4F4F2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%236B6B6B' font-family='Inter, Arial, sans-serif' font-size='36'>Image%20unavailable</text></svg>"} alt={`${vehicle.make} ${vehicle.model}`} onError={(e) => { (e.currentTarget as HTMLImageElement).src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'><rect width='100%' height='100%' fill='%23F4F4F2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%236B6B6B' font-family='Inter, Arial, sans-serif' font-size='36'>Image%20unavailable</text></svg>"; }} />
+              <img loading="lazy" decoding="async" src={vehicle.images?.[0] || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'><rect width='100%' height='100%' fill='%23F4F4F2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%236B6B6B' font-family='Inter, Arial, sans-serif' font-size='36'>Image%20unavailable</text></svg>"} alt={`${vehicle.make} ${vehicle.model}`} onError={(e) => { (e.currentTarget as HTMLImageElement).src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'><rect width='100%' height='100%' fill='%23F4F4F2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%236B6B6B' font-family='Inter, Arial, sans-serif' font-size='36'>Image%20unavailable</text></svg>"; }} />
             </div>
             <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
               {(vehicle.images || []).slice(1, 5).map((src: string) => (
                 <div key={src} style={{ borderRadius: 18, overflow: 'hidden' }}>
-                  <img src={src || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'><rect width='100%' height='100%' fill='%23F4F4F2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%236B6B6B' font-family='Inter, Arial, sans-serif' font-size='36'>Image%20unavailable</text></svg>"} alt={`${vehicle.make} ${vehicle.model}`} onError={(e) => { (e.currentTarget as HTMLImageElement).src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'><rect width='100%' height='100%' fill='%23F4F4F2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%236B6B6B' font-family='Inter, Arial, sans-serif' font-size='36'>Image%20unavailable</text></svg>"; }} />
+                  <img loading="lazy" decoding="async" src={src || "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'><rect width='100%' height='100%' fill='%23F4F4F2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%236B6B6B' font-family='Inter, Arial, sans-serif' font-size='36'>Image%20unavailable</text></svg>"} alt={`${vehicle.make} ${vehicle.model}`} onError={(e) => { (e.currentTarget as HTMLImageElement).src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 800'><rect width='100%' height='100%' fill='%23F4F4F2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%236B6B6B' font-family='Inter, Arial, sans-serif' font-size='36'>Image%20unavailable</text></svg>"; }} />
                 </div>
               ))}
             </div>
@@ -106,7 +100,6 @@ export default function VehicleDetailsPage() {
           </div>
         </div>
       </main>
-      <Footer />
-    </div>
+    </AdminLayout>
   );
 }
