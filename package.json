@@ -2,11 +2,12 @@
   "name": "tnl-motors-monorepo",
   "private": true,
   "version": "1.0.0",
+  "workspaces": ["client", "server"],
   "scripts": {
     "dev": "concurrently \"npm:server:dev\" \"npm:client:dev\"",
     "server:dev": "cd server && npm run dev",
     "client:dev": "cd client && npm run dev",
-    "build": "cd client && npm run build && cd ../server && echo \"Server has no build step\"",
+    "build": "npm --workspace=client run build && echo \"Server has no build step\"",
     "start": "node server/index.js"
   },
   "devDependencies": {
