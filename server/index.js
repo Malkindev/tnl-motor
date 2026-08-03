@@ -28,7 +28,9 @@ if (process.env.NODE_ENV === 'production' && !useS3) {
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
-const uploadsDir = path.join(process.cwd(), 'uploads');
+const uploadsDir = process.env.VERCEL
+  ? '/tmp/uploads'
+  : path.join(process.cwd(), 'uploads');
 if (!useS3) {
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
